@@ -334,6 +334,23 @@ namespace Mvc.Extensions
             return new MvcHtmlString(builder.ToString());
         }
 
+        public static MvcHtmlString BuildMultipleSelect<T>(this HtmlHelper<T> htmlHelper, IEnumerable<KeyValuePair<string, string>> options, string inputName, string displayName, string helpText, List<string> selectedValues)
+        {
+            var builder = new StringBuilder();
+            AppendFormStartOfInputWrappers(htmlHelper, builder, inputName, displayName);
+            builder.Append(string.Format("\n\t\t<select id=\"{0}\" name=\"{0}\" multiple=\"\" class=\"xlarge\">", inputName));
+            foreach (var option in options)
+            {
+                builder.Append(selectedValues.Contains(option.Key)
+                    ? string.Format("<option value={0} selected>{1}</option>", option.Key, option.Value)
+                    : string.Format("<option value={0}>{1}</option>", option.Key, option.Value));
+            }
+            builder.Append("</select>");
+            builder.Append(string.Format("\n\t\t<span class=\"help-inline\">{0}</span>", htmlHelper.GetErrorOrDisplayHelp(inputName, helpText)));
+            AppendFormEndOfInputWrappers(builder);
+            return new MvcHtmlString(builder.ToString());
+        }
+
         public static MvcHtmlString BuildSelectWithTextInput<T>(this HtmlHelper<T> htmlHelper, IEnumerable<KeyValuePair<string, string>> options, string selectId, string selectDisplayName, string selectHelpText, Expression<Func<T, object>> selectAction, string textInputId, string textInputPlaceholder, string textInputDisplayName, Expression<Func<T, object>> textInputAction)
         {
             var expression = GetMemberInfo(selectAction);
